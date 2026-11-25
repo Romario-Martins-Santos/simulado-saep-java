@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulado 2 SAEP - Desenvolvedor Java (SENAI)</title>
+  <style>
+    :root {
+      --primary: #004b87;
+      --primary-dark: #00335c;
+      --accent: #e30613;
+      --bg: #f4f7fa;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #cbd5e1;
+      --correct-bg: #dcfce7;
+      --correct-border: #16a34a;
+      --wrong-bg: #fee2e2;
+      --wrong-border: #dc2626;
+      --code-bg: #0f172a;
+      --code-text: #f8fafc;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding-bottom: 60px;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff;
+      padding: 24px 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+
+    .header-inner {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.18);
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    header h1 {
+      font-size: 1.65rem;
+      margin-bottom: 6px;
+    }
+
+    header p {
+      font-size: 0.95rem;
+      opacity: 0.9;
+    }
+
+    .status-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .status-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .progress-wrap {
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--primary);
+      transition: width 0.25s ease;
+    }
+
+    .timer-box {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--primary);
+      background: #eff6ff;
+      padding: 6px 14px;
+      border-radius: 8px;
+      border: 1px solid #bfdbfe;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 24px auto 0;
+      padding: 0 16px;
+    }
+
+    .block-title {
+      margin: 28px 0 14px;
+      padding-left: 12px;
+      border-left: 4px solid var(--accent);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+    }
+
+    .question-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 22px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+      transition: border-color 0.2s;
+    }
+
+    .question-card.answered {
+      border-color: #93c5fd;
+    }
+
+    .question-card.result-correct {
+      border: 2px solid var(--correct-border);
+    }
+
+    .question-card.result-wrong {
+      border: 2px solid var(--wrong-border);
+    }
+
+    .q-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 8px;
+    }
+
+    .q-num {
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 0.95rem;
+    }
+
+    .q-tag {
+      font-size: 0.78rem;
+      background: #f1f5f9;
+      color: var(--muted);
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    .q-text {
+      font-size: 1rem;
+      margin-bottom: 14px;
+    }
+
+    pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 14px 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: 'Consolas', 'Fira Code', monospace;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+
+    code {
+      font-family: 'Consolas', 'Fira Code', monospace;
+      background: #e2e8f0;
+      color: #0f172a;
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .option-label {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      background: #fff;
+    }
+
+    .option-label:hover {
+      background: #f8fafc;
+      border-color: var(--primary);
+    }
+
+    .option-label input[type="radio"] {
+      margin-top: 4px;
+      accent-color: var(--primary);
+      width: 17px;
+      height: 17px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .option-label.opt-correct {
+      background: var(--correct-bg);
+      border-color: var(--correct-border);
+      font-weight: 600;
+    }
+
+    .option-label.opt-wrong {
+      background: var(--wrong-bg);
+      border-color: var(--wrong-border);
+    }
+
+    .option-content {
+      flex: 1;
+      overflow-x: auto;
+    }
+
+    .option-content pre {
+      margin: 6px 0 0;
+    }
+
+    .explanation-box {
+      display: none;
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: #f8fafc;
+      border-left: 4px solid var(--primary);
+      font-size: 0.92rem;
+    }
+
+    .explanation-box.visible {
+      display: block;
+    }
+
+    .actions-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+      justify-content: center;
+    }
+
+    button {
+      padding: 13px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    button:active {
+      transform: scale(0.99);
+    }
+
+    .btn-submit {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .btn-submit:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-reset {
+      background: #e2e8f0;
+      color: var(--text);
+    }
+
+    .btn-reset:hover {
+      background: #cbd5e1;
+    }
+
+    .score-panel {
+      display: none;
+      background: #ffffff;
+      border: 2px solid var(--primary);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      text-align: center;
+      box-shadow: 0 6px 18px rgba(0, 75, 135, 0.12);
+    }
+
+    .score-panel.visible {
+      display: block;
+    }
+
+    .score-big {
+      font-size: 2.3rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin: 8px 0;
+    }
+
+    .score-msg {
+      font-size: 1rem;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .warning-msg {
+      color: #b45309;
+      background: #fef3c7;
+      border: 1px solid #f59e0b;
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-top: 14px;
+      display: none;
+      text-align: center;
+      font-weight: 600;
+      font-size: 0.92rem;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <span class="badge">SENAI • Qualificação Profissional (200h)</span>
+      <h1>Simulado 2 SAEP — Desenvolvedor Java</h1>
+      <p>15 novas questões inéditas de múltipla escolha no padrão SAEP. Marque suas respostas e clique em corrigir ao final.</p>
+    </div>
+  </header>
+
+  <div class="status-bar">
+    <div class="status-inner">
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span>Progresso</span>
+          <span id="progressText">0 de 15 respondidas</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+      <div class="timer-box" id="timerBox">Tempo: 00:00</div>
+    </div>
+  </div>
+
+  <main>
+    <div class="score-panel" id="scorePanel">
+      <h2>Resultado do Simulado 2</h2>
+      <div class="score-big" id="scoreValue">0 / 15 (0%)</div>
+      <p class="score-msg" id="scoreFeedback"></p>
+      <p style="font-size: 0.88rem; color: var(--muted);">Role para baixo para conferir o gabarito comentado de cada questão.</p>
+    </div>
+
+    <form id="quizForm">
+      <div id="questionsContainer"></div>
+
+      <div class="warning-msg" id="warningMsg"></div>
+
+      <div class="actions-bar">
+        <button type="button" class="btn-submit" id="btnSubmit">Finalizar e Corrigir Simulado</button>
+        <button type="button" class="btn-reset" id="btnReset">Limpar e Refazer</button>
+      </div>
+    </form>
+
+    <footer>
+      Simulado Complementar (Edição 2) — Preparação SAEP para Curso de Qualificação Profissional em Desenvolvimento Java.
+    </footer>
+  </main>
+
+  <script>
+    const questions = [
+      {
+        id: 1,
+        block: "Bloco 1: Lógica, Estruturas de Controle e Operadores",
+        tag: "Estrutura Condicional — switch-case",
+        text: "Um sistema de atendimento automático em Java utiliza o código do setor digitado pelo cliente para encaminhar a chamada. Analise o trecho abaixo:",
+        code: `int setor = 2;
+switch (setor) {
+    case 1:
+        System.out.print("Financeiro ");
+    case 2:
+        System.out.print("Suporte ");
+    case 3:
+        System.out.print("Comercial ");
+        break;
+    default:
+        System.out.print("Inválido ");
+}`,
+        prompt: "Ao executar esse código com <code>setor = 2</code>, qual será a saída impressa no console?",
+        options: [
+          { key: "A", text: "<code>Suporte </code>" },
+          { key: "B", text: "<code>Suporte Comercial </code>" },
+          { key: "C", text: "<code>Financeiro Suporte Comercial </code>" },
+          { key: "D", text: "<code>Suporte Comercial Inválido </code>" }
+        ],
+        answer: "B",
+        explanation: "A execução entra no <code>case 2</code> e imprime <code>Suporte </code>. Como não há <code>break</code> no final do <code>case 2</code>, ocorre o efeito <em>fall-through</em>, executando também o <code>case 3</code> (<code>Comercial </code>) até encontrar o <code>break</code>."
+      },
+      {
+        id: 2,
+        tag: "Laços de Repetição — do-while",
+        text: "Em uma rotina de validação de leitura de sensor industrial, o técnico implementou o seguinte laço de repetição:",
+        code: `int tentativas = 5;
+do {
+    System.out.println("Tentativa: " + tentativas);
+    tentativas++;
+} while (tentativas < 5);`,
+        prompt: "Quantas vezes a mensagem será exibida no console durante a execução?",
+        options: [
+          { key: "A", text: "Nenhuma vez, pois <code>5 &lt; 5</code> é falso." },
+          { key: "B", text: "1 vez, exibindo <code>Tentativa: 5</code>." },
+          { key: "C", text: "5 vezes, de 1 até 5." },
+          { key: "D", text: "Infinitas vezes (loop infinito)." }
+        ],
+        answer: "B",
+        explanation: "A estrutura <code>do-while</code> testa a condição apenas no final. Por isso, o bloco é executado obrigatoriamente pelo menos <strong>1 vez</strong> antes de verificar que <code>6 &lt; 5</code> é falso."
+      },
+      {
+        id: 3,
+        tag: "Operadores Lógicos e Curto-Circuito",
+        text: "Para evitar erro de referência nula ao validar o código de um produto em estoque, um desenvolvedor escreveu a seguinte condição:",
+        code: `String codigo = null;
+if (codigo != null && codigo.length() > 3) {
+    System.out.println("Código válido");
+} else {
+    System.out.println("Código inválido");
+}`,
+        prompt: "Qual será o comportamento da aplicação ao executar esse código?",
+        options: [
+          { key: "A", text: "Lançará <code>NullPointerException</code> ao avaliar <code>codigo.length()</code>." },
+          { key: "B", text: "Exibirá <code>Código inválido</code>, pois o operador <code>&amp;&amp;</code> realiza avaliação de curto-circuito e não executa o segundo operando quando o primeiro é falso." },
+          { key: "C", text: "Exibirá <code>Código válido</code>, pois <code>null</code> possui tamanho maior que 3." },
+          { key: "D", text: "Erro de compilação, pois <code>null</code> não pode ser comparado com <code>!=</code>." }
+        ],
+        answer: "B",
+        explanation: "O operador lógico <code>&amp;&amp;</code> (AND com curto-circuito) interrompe a avaliação assim que encontra a primeira expressão falsa (<code>codigo != null</code>), evitando que <code>codigo.length()</code> seja chamado sobre um objeto nulo."
+      },
+      {
+        id: 4,
+        tag: "Matrizes Bidimensionais (Arrays 2D)",
+        text: "Um sistema de controle de vagas de estacionamento representa os andares e vagas por meio da matriz: <code>int[][] vagas = { {1, 0, 1}, {0, 1, 1} };</code>, onde <code>1</code> indica vaga ocupada e <code>0</code> indica vaga livre.",
+        prompt: "Qual expressão acessa o status da <strong>segunda linha, terceira coluna</strong> (cujo valor é <code>1</code>)?",
+        options: [
+          { key: "A", text: "<code>vagas[2][3]</code>" },
+          { key: "B", text: "<code>vagas[1][2]</code>" },
+          { key: "C", text: "<code>vagas[2][1]</code>" },
+          { key: "D", text: "<code>vagas[0][2]</code>" }
+        ],
+        answer: "B",
+        explanation: "Em Java, tanto linhas quanto colunas começam no índice <code>0</code>. Assim, a segunda linha é índice <code>1</code> e a terceira coluna é índice <code>2</code>: <code>vagas[1][2]</code>."
+      },
+      {
+        id: 5,
+        block: "Bloco 2: Programação Orientada a Objetos (POO)",
+        tag: "Classes Abstratas",
+        text: "Em um sistema bancário, a classe <code>ContaBancaria</code> foi declarada como <code>public abstract class ContaBancaria</code> contendo um método abstrato <code>public abstract void atualizarSaldo();</code>.",
+        prompt: "Sobre o uso dessa classe abstrata em Java, assinale a afirmativa correta:",
+        options: [
+          { key: "A", text: "É possível instanciá-la diretamente usando <code>ContaBancaria c = new ContaBancaria();</code>." },
+          { key: "B", text: "Classes abstratas não podem conter atributos nem métodos concretos (com corpo)." },
+          { key: "C", text: "Qualquer subclasse concreta (não abstrata) que estender <code>ContaBancaria</code> é obrigada a implementar o método <code>atualizarSaldo()</code>." },
+          { key: "D", text: "Uma classe pode herdar de múltiplas classes abstratas simultaneamente usando <code>extends</code>." }
+        ],
+        answer: "C",
+        explanation: "Classes abstratas não podem ser instanciadas diretamente com <code>new</code> e obrigam suas subclasses concretas a fornecerem implementação para todos os seus métodos abstratos."
+      },
+      {
+        id: 6,
+        tag: "Herança e Construtores — super()",
+        text: "Observe a hierarquia de classes abaixo:",
+        code: `class Pessoa {
+    public Pessoa(String nome) {
+        System.out.println("Pessoa: " + nome);
+    }
+}
+
+class Aluno extends Pessoa {
+    public Aluno(String nome) {
+        // Linha faltante
+        System.out.println("Aluno matriculado");
+    }
+}`,
+        prompt: "Para que o código da classe <code>Aluno</code> compile corretamente, qual instrução deve ser inserida na linha comentada?",
+        options: [
+          { key: "A", text: "<code>this(nome);</code>" },
+          { key: "B", text: "<code>super(nome);</code>" },
+          { key: "C", text: "<code>Pessoa(nome);</code>" },
+          { key: "D", text: "<code>extends(nome);</code>" }
+        ],
+        answer: "B",
+        explanation: "Como a superclasse <code>Pessoa</code> define apenas um construtor com parâmetro e não possui construtor padrão vazio, a subclasse <code>Aluno</code> deve invocar explicitamente <code>super(nome);</code> na primeira linha do seu construtor."
+      },
+      {
+        id: 7,
+        tag: "Polimorfismo e Operador instanceof",
+        text: "Em um sistema de recursos humanos, uma lista armazena objetos do tipo <code>Funcionario</code>, que pode conter instâncias das subclasses <code>Desenvolvedor</code> e <code>Designer</code>. Antes de realizar um <em>downcasting</em> para acessar um método exclusivo de <code>Desenvolvedor</code>, o programador deseja verificar o tipo real do objeto em memória.",
+        prompt: "Qual operador Java realiza essa verificação com segurança?",
+        options: [
+          { key: "A", text: "<code>typeof</code>" },
+          { key: "B", text: "<code>instanceof</code>" },
+          { key: "C", text: "<code>isClass</code>" },
+          { key: "D", text: "<code>implements</code>" }
+        ],
+        answer: "B",
+        explanation: "O operador <code>instanceof</code> testa em tempo de execução se um objeto é instância de determinada classe ou subclasse (ex.: <code>if (f instanceof Desenvolvedor)</code>), evitando <code>ClassCastException</code>."
+      },
+      {
+        id: 8,
+        tag: "Modificadores de Acesso — protected",
+        text: "Ao projetar uma biblioteca de componentes em Java, o arquiteto declarou o atributo <code>protected double taxaBase;</code> na superclasse <code>Servico</code>.",
+        prompt: "Quais classes têm permissão para acessar diretamente o atributo <code>taxaBase</code>?",
+        options: [
+          { key: "A", text: "Somente a própria classe <code>Servico</code>." },
+          { key: "B", text: "Qualquer classe de qualquer pacote do projeto." },
+          { key: "C", text: "A própria classe <code>Servico</code>, classes pertencentes ao mesmo pacote e subclasses (mesmo que estejam em outros pacotes)." },
+          { key: "D", text: "Apenas classes declaradas como <code>final</code>." }
+        ],
+        answer: "C",
+        explanation: "O modificador <code>protected</code> concede visibilidade à própria classe, a todas as classes do mesmo pacote (<em>package-private</em>) e às subclasses em qualquer pacote."
+      },
+      {
+        id: 9,
+        tag: "Constantes — static final",
+        text: "Em uma aplicação financeira, deseja-se definir o valor máximo de transferência PIX permitida pelo sistema (<code>5000.00</code>) como uma constante global da classe <code>ConfiguracaoPix</code>, imutável e acessível sem precisar instanciar a classe.",
+        prompt: "Qual declaração segue a convenção e a sintaxe correta da linguagem Java?",
+        options: [
+          { key: "A", text: "<code>public const double LIMITE_PIX = 5000.00;</code>" },
+          { key: "B", text: "<code>public static final double LIMITE_PIX = 5000.00;</code>" },
+          { key: "C", text: "<code>public abstract double LIMITE_PIX = 5000.00;</code>" },
+          { key: "D", text: "<code>private volatile double LIMITE_PIX = 5000.00;</code>" }
+        ],
+        answer: "B",
+        explanation: "Em Java, constantes de classe são declaradas com <code>static final</code> e nomeadas em letras maiúsculas separadas por sublinhado (<em>UPPER_SNAKE_CASE</em>)."
+      },
+      {
+        id: 10,
+        block: "Bloco 3: Coleções, Exceções, Strings e API Java",
+        tag: "Coleções — Map / HashMap",
+        text: "Para armazenar pares de <strong>sigla do estado</strong> (chave única, ex.: <code>"SP"</code>) e <strong>nome completo do estado</strong> (valor, ex.: <code>"São Paulo"</code>) com busca rápida pela chave, qual estrutura da API de Coleções Java é mais adequada?",
+        options: [
+          { key: "A", text: "<code>Map&lt;String, String&gt; estados = new HashMap&lt;&gt;();</code>" },
+          { key: "B", text: "<code>List&lt;String&gt; estados = new ArrayList&lt;&gt;();</code>" },
+          { key: "C", text: "<code>Set&lt;String&gt; estados = new HashSet&lt;&gt;();</code>" },
+          { key: "D", text: "<code>Queue&lt;String&gt; estados = new LinkedList&lt;&gt;();</code>" }
+        ],
+        answer: "A",
+        explanation: "A interface <code>Map</code> (implementada por <code>HashMap</code>) armazena associações chave-valor (<em>key-value</em>) sem permitir chaves duplicadas."
+      },
+      {
+        id: 11,
+        tag: "Coleções — Set / HashSet",
+        text: "Um sistema importa uma lista de e-mails de clientes para envio de mala direta e precisa eliminar automaticamente endereços duplicados sem se preocupar com a ordem de inserção. Analise o código:",
+        code: `Set<String> emails = new HashSet<>();
+emails.add("ana@senai.br");
+emails.add("joao@senai.br");
+emails.add("ana@senai.br");
+System.out.println(emails.size());`,
+        prompt: "Qual valor será impresso no console?",
+        options: [
+          { key: "A", text: "3" },
+          { key: "B", text: "2" },
+          { key: "C", text: "1" },
+          { key: "D", text: "Lançará exceção <code>DuplicateElementException</code>." }
+        ],
+        answer: "B",
+        explanation: "Coleções do tipo <code>Set</code> (como <code>HashSet</code>) não armazenam elementos duplicados. A segunda inserção de <code>"ana@senai.br"</code> é ignorada, resultando em tamanho <code>2</code>."
+      },
+      {
+        id: 12,
+        tag: "Exceções — NullPointerException",
+        text: "Durante os testes de uma aplicação Java, ocorreu a seguinte falha em tempo de execução: <code>java.lang.NullPointerException</code> na linha <code>cliente.getEndereco().getCidade();</code>.",
+        prompt: "Qual é a causa direta dessa exceção?",
+        options: [
+          { key: "A", text: "O método <code>getCidade()</code> retornou uma string vazia <code>""</code>." },
+          { key: "B", text: "A variável <code>cliente</code> ou o retorno de <code>getEndereco()</code> está com referência <code>null</code> quando um método é invocado sobre ela." },
+          { key: "C", text: "Houve tentativa de dividir um número inteiro por zero." },
+          { key: "D", text: "O índice acessado ultrapassou o limite de um vetor." }
+        ],
+        answer: "B",
+        explanation: "<code>NullPointerException</code> ocorre sempre que o programa tenta invocar um método ou acessar um atributo de uma referência que aponta para <code>null</code>."
+      },
+      {
+        id: 13,
+        tag: "Lançamento Manual de Exceções — throw",
+        text: "Na classe <code>Conta</code>, o método <code>sacar(double valor)</code> deve interromper a operação lançando manualmente uma exceção caso o valor informado seja negativo.",
+        prompt: "Qual palavra-chave é utilizada dentro do corpo do método para disparar essa exceção?",
+        options: [
+          { key: "A", text: "<code>throws</code>" },
+          { key: "B", text: "<code>throw</code>" },
+          { key: "C", text: "<code>catch</code>" },
+          { key: "D", text: "<code>final</code>" }
+        ],
+        answer: "B",
+        explanation: "Usa-se <code>throw</code> (no singular) dentro do método para lançar uma instância de exceção (ex.: <code>throw new IllegalArgumentException();</code>), enquanto <code>throws</code> vai na assinatura do método."
+      },
+      {
+        id: 14,
+        tag: "Manipulação de Strings — Métodos Úteis",
+        text: "Um formulário web recebeu o nome de usuário com espaços extras nas pontas e letras misturadas: <code>String usuario = "  Admin_Senai  ";</code>.",
+        prompt: "Qual encadeamento de métodos transforma o valor para <code>"admin_senai"</code> (sem espaços nas extremidades e todo em minúsculo)?",
+        options: [
+          { key: "A", text: "<code>usuario.trim().toLowerCase()</code>" },
+          { key: "B", text: "<code>usuario.split().toLower()</code>" },
+          { key: "C", text: "<code>usuario.clean().lowerCase()</code>" },
+          { key: "D", text: "<code>usuario.replaceAll().toUpperCase()</code>" }
+        ],
+        answer: "A",
+        explanation: "O método <code>.trim()</code> remove espaços em branco no início e no fim da string, e <code>.toLowerCase()</code> converte todos os caracteres para minúsculo."
+      },
+      {
+        id: 15,
+        tag: "Ferramentas do Ecossistema — JDK vs JRE",
+        text: "Um laboratório de informática do SENAI precisa configurar as máquinas dos alunos para que eles possam <strong>escrever, compilar (<code>javac</code>) e executar</strong> programas em Java.",
+        prompt: "Qual pacote de software deve ser instalado nas estações de desenvolvimento?",
+        options: [
+          { key: "A", text: "Apenas a JVM isolada, pois ela já inclui o compilador <code>javac</code>." },
+          { key: "B", text: "Apenas o JRE (Java Runtime Environment), pois ele contém todas as ferramentas de compilação." },
+          { key: "C", text: "O JDK (Java Development Kit), pois inclui o compilador <code>javac</code>, ferramentas de desenvolvimento e o ambiente de execução (JRE/JVM)." },
+          { key: "D", text: "Apenas o navegador web com plugin Java ativado." }
+        ],
+        answer: "C",
+        explanation: "O <strong>JRE</strong> serve apenas para executar aplicações prontas. Para desenvolver e compilar código-fonte (<code>javac</code>), é obrigatório instalar o <strong>JDK</strong> (que já engloba o JRE e a JVM)."
+      }
+    ];
+
+    const container = document.getElementById("questionsContainer");
+    const progressText = document.getElementById("progressText");
+    const progressFill = document.getElementById("progressFill");
+    const timerBox = document.getElementById("timerBox");
+    const scorePanel = document.getElementById("scorePanel");
+    const scoreValue = document.getElementById("scoreValue");
+    const scoreFeedback = document.getElementById("scoreFeedback");
+    const warningMsg = document.getElementById("warningMsg");
+    const btnSubmit = document.getElementById("btnSubmit");
+    const btnReset = document.getElementById("btnReset");
+
+    let secondsElapsed = 0;
+    let timerInterval = null;
+    let isSubmitted = false;
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function renderQuestions() {
+      container.innerHTML = "";
+      questions.forEach((q) => {
+        if (q.block) {
+          const blockEl = document.createElement("div");
+          blockEl.className = "block-title";
+          blockEl.textContent = q.block;
+          container.appendChild(blockEl);
+        }
+
+        const card = document.createElement("div");
+        card.className = "question-card";
+        card.id = `card-q${q.id}`;
+
+        let codeHtml = q.code ? `<pre><code>${escapeHtml(q.code)}</code></pre>` : "";
+
+        let optionsHtml = q.options
+          .map((opt) => {
+            const optCode = opt.code ? `<pre><code>${escapeHtml(opt.code)}</code></pre>` : "";
+            return `
+              <label class="option-label" id="label-q${q.id}-${opt.key}">
+                <input type="radio" name="q${q.id}" value="${opt.key}" />
+                <div class="option-content">
+                  <strong>${opt.key})</strong> ${opt.text}
+                  ${optCode}
+                </div>
+              </label>
+            `;
+          })
+          .join("");
+
+        card.innerHTML = `
+          <div class="q-header">
+            <span class="q-num">Questão ${q.id}</span>
+            <span class="q-tag">${q.tag}</span>
+          </div>
+          <p class="q-text">${q.text}</p>
+          ${codeHtml}
+          <p class="q-text"><strong>${q.prompt}</strong></p>
+          <div class="options-list">${optionsHtml}</div>
+          <div class="explanation-box" id="exp-q${q.id}">
+            <strong>Gabarito: Alternativa ${q.answer}</strong><br />
+            ${q.explanation}
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      document.querySelectorAll('input[type="radio"]').forEach((radio) => {
+        radio.addEventListener("change", (e) => {
+          const qName = e.target.name;
+          const card = document.getElementById(`card-${qName}`);
+          if (card) card.classList.add("answered");
+          updateProgress();
+          warningMsg.style.display = "none";
+        });
+      });
+    }
+
+    function updateProgress() {
+      const answeredCount = questions.filter((q) =>
+        document.querySelector(`input[name="q${q.id}"]:checked`)
+      ).length;
+      const pct = Math.round((answeredCount / questions.length) * 100);
+      progressText.textContent = `${answeredCount} de ${questions.length} respondidas`;
+      progressFill.style.width = `${pct}%`;
+    }
+
+    function startTimer() {
+      clearInterval(timerInterval);
+      secondsElapsed = 0;
+      timerBox.textContent = "Tempo: 00:00";
+      timerInterval = setInterval(() => {
+        if (isSubmitted) return;
+        secondsElapsed++;
+        const mins = String(Math.floor(secondsElapsed / 60)).padStart(2, "0");
+        const secs = String(secondsElapsed % 60).padStart(2, "0");
+        timerBox.textContent = `Tempo: ${mins}:${secs}`;
+      }, 1000);
+    }
+
+    btnSubmit.addEventListener("click", () => {
+      if (isSubmitted) return;
+
+      const unanswered = questions.filter(
+        (q) => !document.querySelector(`input[name="q${q.id}"]:checked`)
+      );
+
+      if (unanswered.length > 0) {
+        const nums = unanswered.map((q) => q.id).join(", ");
+        warningMsg.textContent = `Ainda faltam ${unanswered.length} questão(ões) sem resposta: ${nums}. Responda todas antes de corrigir.`;
+        warningMsg.style.display = "block";
+        document.getElementById(`card-q${unanswered[0].id}`).scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
+      }
+
+      isSubmitted = true;
+      clearInterval(timerInterval);
+      warningMsg.style.display = "none";
+
+      let correctCount = 0;
+
+      questions.forEach((q) => {
+        const selected = document.querySelector(`input[name="q${q.id}"]:checked`).value;
+        const card = document.getElementById(`card-q${q.id}`);
+        const expBox = document.getElementById(`exp-q${q.id}`);
+
+        document.querySelectorAll(`input[name="q${q.id}"]`).forEach((inp) => (inp.disabled = true));
+
+        const correctLabel = document.getElementById(`label-q${q.id}-${q.answer}`);
+        correctLabel.classList.add("opt-correct");
+
+        if (selected === q.answer) {
+          correctCount++;
+          card.classList.add("result-correct");
+        } else {
+          card.classList.add("result-wrong");
+          const wrongLabel = document.getElementById(`label-q${q.id}-${selected}`);
+          wrongLabel.classList.add("opt-wrong");
+        }
+
+        expBox.classList.add("visible");
+      });
+
+      const pct = Math.round((correctCount / questions.length) * 100);
+      scoreValue.textContent = `${correctCount} / ${questions.length} (${pct}%)`;
+
+      if (pct >= 80) {
+        scoreFeedback.textContent = "Excelente desempenho! Você domina os fundamentos cobrados no SAEP.";
+      } else if (pct >= 60) {
+        scoreFeedback.textContent = "Bom resultado! Revise os comentários das questões que errou para consolidar os detalhes.";
+      } else {
+        scoreFeedback.textContent = "Vale reforçar a revisão antes da prova. Leia com atenção cada explicação abaixo.";
+      }
+
+      scorePanel.classList.add("visible");
+      btnSubmit.disabled = true;
+      btnSubmit.style.opacity = "0.6";
+      scorePanel.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    btnReset.addEventListener("click", () => {
+      isSubmitted = false;
+      scorePanel.classList.remove("visible");
+      warningMsg.style.display = "none";
+      btnSubmit.disabled = false;
+      btnSubmit.style.opacity = "1";
+      renderQuestions();
+      updateProgress();
+      startTimer();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    renderQuestions();
+    startTimer();
+  </script>
+</body>
+</html>
