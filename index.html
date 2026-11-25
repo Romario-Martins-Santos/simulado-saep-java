@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulado SAEP - Desenvolvedor Java (SENAI)</title>
+  <style>
+    :root {
+      --primary: #004b87;
+      --primary-dark: #00335c;
+      --accent: #e30613;
+      --bg: #f4f7fa;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #cbd5e1;
+      --correct-bg: #dcfce7;
+      --correct-border: #16a34a;
+      --wrong-bg: #fee2e2;
+      --wrong-border: #dc2626;
+      --code-bg: #0f172a;
+      --code-text: #f8fafc;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding-bottom: 60px;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff;
+      padding: 24px 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+
+    .header-inner {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.18);
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    header h1 {
+      font-size: 1.65rem;
+      margin-bottom: 6px;
+    }
+
+    header p {
+      font-size: 0.95rem;
+      opacity: 0.9;
+    }
+
+    .status-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .status-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .progress-wrap {
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--primary);
+      transition: width 0.25s ease;
+    }
+
+    .timer-box {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--primary);
+      background: #eff6ff;
+      padding: 6px 14px;
+      border-radius: 8px;
+      border: 1px solid #bfdbfe;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 24px auto 0;
+      padding: 0 16px;
+    }
+
+    .block-title {
+      margin: 28px 0 14px;
+      padding-left: 12px;
+      border-left: 4px solid var(--accent);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+    }
+
+    .question-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 22px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+      transition: border-color 0.2s;
+    }
+
+    .question-card.answered {
+      border-color: #93c5fd;
+    }
+
+    .question-card.result-correct {
+      border: 2px solid var(--correct-border);
+    }
+
+    .question-card.result-wrong {
+      border: 2px solid var(--wrong-border);
+    }
+
+    .q-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 8px;
+    }
+
+    .q-num {
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 0.95rem;
+    }
+
+    .q-tag {
+      font-size: 0.78rem;
+      background: #f1f5f9;
+      color: var(--muted);
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    .q-text {
+      font-size: 1rem;
+      margin-bottom: 14px;
+    }
+
+    pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 14px 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: 'Consolas', 'Fira Code', monospace;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+
+    code {
+      font-family: 'Consolas', 'Fira Code', monospace;
+      background: #e2e8f0;
+      color: #0f172a;
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .option-label {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      background: #fff;
+    }
+
+    .option-label:hover {
+      background: #f8fafc;
+      border-color: var(--primary);
+    }
+
+    .option-label input[type="radio"] {
+      margin-top: 4px;
+      accent-color: var(--primary);
+      width: 17px;
+      height: 17px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .option-label.opt-correct {
+      background: var(--correct-bg);
+      border-color: var(--correct-border);
+      font-weight: 600;
+    }
+
+    .option-label.opt-wrong {
+      background: var(--wrong-bg);
+      border-color: var(--wrong-border);
+    }
+
+    .option-content {
+      flex: 1;
+      overflow-x: auto;
+    }
+
+    .option-content pre {
+      margin: 6px 0 0;
+    }
+
+    .explanation-box {
+      display: none;
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: #f8fafc;
+      border-left: 4px solid var(--primary);
+      font-size: 0.92rem;
+    }
+
+    .explanation-box.visible {
+      display: block;
+    }
+
+    .actions-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+      justify-content: center;
+    }
+
+    button {
+      padding: 13px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    button:active {
+      transform: scale(0.99);
+    }
+
+    .btn-submit {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .btn-submit:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-reset {
+      background: #e2e8f0;
+      color: var(--text);
+    }
+
+    .btn-reset:hover {
+      background: #cbd5e1;
+    }
+
+    .score-panel {
+      display: none;
+      background: #ffffff;
+      border: 2px solid var(--primary);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      text-align: center;
+      box-shadow: 0 6px 18px rgba(0, 75, 135, 0.12);
+    }
+
+    .score-panel.visible {
+      display: block;
+    }
+
+    .score-big {
+      font-size: 2.3rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin: 8px 0;
+    }
+
+    .score-msg {
+      font-size: 1rem;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .warning-msg {
+      color: #b45309;
+      background: #fef3c7;
+      border: 1px solid #f59e0b;
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-top: 14px;
+      display: none;
+      text-align: center;
+      font-weight: 600;
+      font-size: 0.92rem;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <span class="badge">SENAI • Qualificação Profissional (200h)</span>
+      <h1>Simulado SAEP — Desenvolvedor Java</h1>
+      <p>15 questões de múltipla escolha contextualizadas no padrão SAEP. Marque suas respostas e clique em corrigir ao final.</p>
+    </div>
+  </header>
+
+  <div class="status-bar">
+    <div class="status-inner">
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span>Progresso</span>
+          <span id="progressText">0 de 15 respondidas</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+      <div class="timer-box" id="timerBox">Tempo: 00:00</div>
+    </div>
+  </div>
+
+  <main>
+    <div class="score-panel" id="scorePanel">
+      <h2>Resultado do Simulado</h2>
+      <div class="score-big" id="scoreValue">0 / 15 (0%)</div>
+      <p class="score-msg" id="scoreFeedback"></p>
+      <p style="font-size: 0.88rem; color: var(--muted);">Role para baixo para conferir o gabarito comentado de cada questão.</p>
+    </div>
+
+    <form id="quizForm">
+      <div id="questionsContainer"></div>
+
+      <div class="warning-msg" id="warningMsg"></div>
+
+      <div class="actions-bar">
+        <button type="button" class="btn-submit" id="btnSubmit">Finalizar e Corrigir Simulado</button>
+        <button type="button" class="btn-reset" id="btnReset">Limpar e Refazer</button>
+      </div>
+    </form>
+
+    <footer>
+      Material de estudo gerado para preparação SAEP — Curso de Qualificação Profissional em Desenvolvimento Java.
+    </footer>
+  </main>
+
+  <script>
+    const questions = [
+      {
+        id: 1,
+        block: "Bloco 1: Lógica de Programação e Sintaxe Java",
+        tag: "Situação-Problema — Controle de Estoque",
+        text: "Um desenvolvedor júnior do SENAI está criando uma rotina em Java para calcular o desconto progressivo de um sistema de vendas. O requisito determina que compras acima de R$ 500,00 recebem 10% de desconto; compras de R$ 200,00 até R$ 500,00 recebem 5%; e compras abaixo de R$ 200,00 não têm desconto. Analise o trecho de código escrito pelo desenvolvedor:",
+        code: `double valorCompra = 500.00;
+double desconto = 0.0;
+
+if (valorCompra > 500.00) {
+    desconto = valorCompra * 0.10;
+} else if (valorCompra >= 200.00) {
+    desconto = valorCompra * 0.05;
+}
+System.out.println("Desconto: " + desconto);`,
+        prompt: "Ao executar esse código com <code>valorCompra = 500.00</code>, qual será a saída no console e por quê?",
+        options: [
+          { key: "A", text: "<code>Desconto: 50.0</code>, pois 500,00 entra na primeira condição." },
+          { key: "B", text: "<code>Desconto: 25.0</code>, pois o operador <code>&gt;</code> exclui o valor exato 500.00, levando a execução para o bloco <code>else if</code>." },
+          { key: "C", text: "<code>Desconto: 0.0</code>, pois falta um bloco <code>else</code> final no código." },
+          { key: "D", text: "Erro de compilação, pois valores do tipo <code>double</code> não aceitam operadores relacionais como <code>&gt;=</code>." }
+        ],
+        answer: "B",
+        explanation: "A condição <code>500.00 &gt; 500.00</code> é falsa. Por isso, o fluxo vai para o <code>else if (500.00 &gt;= 200.00)</code>, aplicando 5% sobre 500,00 (<code>25.0</code>)."
+      },
+      {
+        id: 2,
+        tag: "Leitura de Código — Laços de Repetição",
+        text: "Durante a manutenção de um sistema de relatórios, você encontra o seguinte laço de repetição responsável por somar identificadores válidos de lotes de produção:",
+        code: `int total = 0;
+for (int i = 1; i <= 6; i++) {
+    if (i == 4) {
+        continue;
+    }
+    if (i % 2 == 0) {
+        total += i;
+    }
+}
+System.out.println(total);`,
+        prompt: "Qual valor será exibido ao final da execução?",
+        options: [
+          { key: "A", text: "12" },
+          { key: "B", text: "8" },
+          { key: "C", text: "10" },
+          { key: "D", text: "6" }
+        ],
+        answer: "B",
+        explanation: "O laço percorre <code>i</code> de 1 a 6. Quando <code>i == 4</code>, o comando <code>continue</code> pula o restante da iteração. Assim, são somados apenas os pares <code>2</code> e <code>6</code> (2 + 6 = 8)."
+      },
+      {
+        id: 3,
+        tag: "Manipulação de Arrays",
+        text: "Um sistema de monitoramento industrial armazena as temperaturas de 5 sensores em um vetor: <code>double[] temperaturas = {24.5, 26.0, 23.8, 29.1, 25.4};</code>. O técnico precisa escrever uma instrução que altere o valor do <strong>quarto sensor</strong> para <code>28.0</code> e imprima o tamanho total do vetor.",
+        prompt: "Qual par de instruções atende corretamente ao requisito?",
+        options: [
+          { key: "A", text: "<code>temperaturas[4] = 28.0;</code> e <code>System.out.println(temperaturas.size());</code>" },
+          { key: "B", text: "<code>temperaturas[3] = 28.0;</code> e <code>System.out.println(temperaturas.length);</code>" },
+          { key: "C", text: "<code>temperaturas[4] = 28.0;</code> e <code>System.out.println(temperaturas.length());</code>" },
+          { key: "D", text: "<code>temperaturas[3] = 28.0;</code> e <code>System.out.println(temperaturas.count);</code>" }
+        ],
+        answer: "B",
+        explanation: "Arrays em Java possuem índice baseado em zero (o 4º elemento está na posição <code>3</code>) e seu tamanho é obtido pela propriedade <code>.length</code> (sem parênteses)."
+      },
+      {
+        id: 4,
+        tag: "Conversão de Tipos e Operadores",
+        text: "Em um módulo de cálculo de médias escolares desenvolvido em Java, um aluno obteve notas inteiras <code>7</code> e <code>8</code>. O programador escreveu:",
+        code: `int n1 = 7;
+int n2 = 8;
+double media = (n1 + n2) / 2;
+System.out.println(media);`,
+        prompt: "O sistema exibiu <code>7.0</code> em vez de <code>7.5</code>. Qual ajuste corrige esse comportamento mantendo <code>n1</code> e <code>n2</code> como <code>int</code>?",
+        options: [
+          { key: "A", text: "Alterar a linha da média para <code>double media = (double) (n1 + n2) / 2;</code>" },
+          { key: "B", text: "Alterar a linha da média para <code>double media = (n1 + n2) / (int) 2.0;</code>" },
+          { key: "C", text: "Alterar o <code>System.out.println</code> para <code>System.out.printf("%d", media);</code>" },
+          { key: "D", text: "Substituir o operador <code>/</code> pelo operador <code>%</code>." }
+        ],
+        answer: "A",
+        explanation: "A divisão entre dois inteiros (<code>15 / 2</code>) descarta a parte decimal e retorna <code>7</code>. Aplicar o <em>casting</em> <code>(double)</code> força a divisão em ponto flutuante (<code>7.5</code>)."
+      },
+      {
+        id: 5,
+        block: "Bloco 2: Programação Orientada a Objetos (POO)",
+        tag: "Encapsulamento e Boas Práticas",
+        text: "Uma empresa de logística solicitou a refatoração da classe <code>Caminhao</code> para impedir que qualquer parte do sistema altere a quilometragem do veículo para um valor menor do que o já registrado.",
+        prompt: "Aplicando os pilares da Orientação a Objetos em Java, qual implementação resolve o problema adequadamente?",
+        options: [
+          { key: "A", text: "Declarar <code>public double quilometragem;</code> e documentar que não deve ser reduzida." },
+          { key: "B", text: "Declarar <code>private double quilometragem;</code> e criar um método público <code>setQuilometragem(double novaKm)</code> contendo um <code>if (novaKm &gt; this.quilometragem)</code> antes de atribuir o valor." },
+          { key: "C", text: "Declarar <code>final double quilometragem = 0;</code> para bloquear alterações indevidas." },
+          { key: "D", text: "Declarar <code>static double quilometragem;</code> para que o valor seja compartilhado entre todos os caminhões da frota." }
+        ],
+        answer: "B",
+        explanation: "O encapsulamento protege o atributo com <code>private</code> e centraliza a regra de validação dentro do método modificador (<em>setter</em>)."
+      },
+      {
+        id: 6,
+        tag: "Construtores e Palavra-chave this",
+        text: "Observe a classe <code>Funcionario</code> abaixo:",
+        code: `public class Funcionario {
+    private String nome;
+    private String cargo;
+
+    public Funcionario(String nome, String cargo) {
+        nome = nome;
+        this.cargo = cargo;
+    }
+
+    public String getNome() { return nome; }
+    public String getCargo() { return cargo; }
+}`,
+        prompt: "Ao instanciar <code>Funcionario f = new Funcionario("Carlos", "Analista");</code> e imprimir <code>f.getNome() + " - " + f.getCargo()</code>, o resultado obtido será:",
+        options: [
+          { key: "A", text: "<code>Carlos - Analista</code>" },
+          { key: "B", text: "<code>null - Analista</code>" },
+          { key: "C", text: "<code>Carlos - null</code>" },
+          { key: "D", text: "Erro de compilação por ambiguidade de nomes." }
+        ],
+        answer: "B",
+        explanation: "Em <code>nome = nome;</code>, o parâmetro oculta o atributo da classe (<em>shadowing</em>) e recebe o próprio valor. O atributo <code>this.nome</code> não é alterado e permanece com o valor padrão <code>null</code>."
+      },
+      {
+        id: 7,
+        tag: "Herança e Sobrescrita",
+        text: "Em um sistema de folha de pagamento, existe uma superclasse <code>Colaborador</code> com o método <code>public double calcularSalario()</code>, que retorna o salário base. A subclasse <code>Gerente</code> herda de <code>Colaborador</code> e precisa adicionar um bônus fixo de R$ 1.000,00 ao cálculo do salário base definido na superclasse.",
+        prompt: "Como o método deve ser implementado em <code>Gerente</code>?",
+        options: [
+          {
+            key: "A",
+            text: "",
+            code: `@Override
+public double calcularSalario() {
+    return super.calcularSalario() + 1000.0;
+}`
+          },
+          {
+            key: "B",
+            text: "",
+            code: `@Overload
+public double calcularSalario() {
+    return this.calcularSalario() + 1000.0;
+}`
+          },
+          {
+            key: "C",
+            text: "",
+            code: `public double calcularSalario(double bonus) {
+    return super + 1000.0;
+}`
+          },
+          {
+            key: "D",
+            text: "",
+            code: `@Override
+public void calcularSalario() {
+    return super.calcularSalario() + 1000.0;
+}`
+          }
+        ],
+        answer: "A",
+        explanation: "A anotação <code>@Override</code> indica sobrescrita, e <code>super.calcularSalario()</code> invoca o método da superclasse para somar R$ 1.000,00 ao resultado."
+      },
+      {
+        id: 8,
+        tag: "Interfaces e Polimorfismo",
+        text: "Uma aplicação de e-commerce precisa integrar diferentes meios de pagamento (Pix, Cartão de Crédito e Boleto). O arquiteto de software definiu uma interface <code>MetodoPagamento</code> com a assinatura <code>void processarPagamento(double valor);</code>.",
+        prompt: "Qual é a principal vantagem técnica dessa abordagem?",
+        options: [
+          { key: "A", text: "Permite que as classes <code>Pix</code>, <code>Cartao</code> e <code>Boleto</code> herdem atributos concretos da interface <code>MetodoPagamento</code>." },
+          { key: "B", text: "Obriga todas as classes implementadoras a seguirem o mesmo contrato, permitindo que o checkout processe qualquer meio de pagamento de forma polimórfica sem conhecer sua implementação interna." },
+          { key: "C", text: "Dispensa a necessidade de instanciar objetos com <code>new</code> nas classes que implementam a interface." },
+          { key: "D", text: "Garante que o método <code>processarPagamento</code> seja executado automaticamente sem precisar ser invocado." }
+        ],
+        answer: "B",
+        explanation: "Interfaces estabelecem contratos comportamentais e permitem o desacoplamento via polimorfismo."
+      },
+      {
+        id: 9,
+        tag: "Sobrecarga de Métodos — Overloading",
+        text: "Analise a classe <code>CalculadoraFrete</code>:",
+        code: `public class CalculadoraFrete {
+    public double calcular(double peso) {
+        return peso * 2.5;
+    }
+    public double calcular(double peso, double distancia) {
+        return (peso * 2.5) + (distancia * 0.5);
+    }
+}`,
+        prompt: "O recurso da Orientação a Objetos aplicado nos dois métodos <code>calcular</code> acima é chamado de:",
+        options: [
+          { key: "A", text: "Sobrescrita (<em>Overriding</em>), pois possuem o mesmo nome e retornam <code>double</code>." },
+          { key: "B", text: "Encapsulamento, pois ocultam a fórmula matemática do usuário." },
+          { key: "C", text: "Sobrecarga (<em>Overloading</em>), pois possuem o mesmo nome na mesma classe, mas listas de parâmetros diferentes." },
+          { key: "D", text: "Abstração, pois a classe não possui atributos definidos." }
+        ],
+        answer: "C",
+        explanation: "Sobrecarga (<em>Overloading</em>) acontece quando métodos de mesmo nome coexistem na mesma classe com assinaturas de parâmetros distintas."
+      },
+      {
+        id: 10,
+        block: "Bloco 3: Coleções, Exceções e Arquitetura Java",
+        tag: "Tratamento de Exceções",
+        text: "Um sistema desktop desenvolvido em Java lê um campo de texto digitado pelo usuário e o converte para número inteiro usando <code>Integer.parseInt(texto)</code>. Caso o usuário digite letras em vez de números, o programa encerra abruptamente.",
+        prompt: "Para tratar essa falha de forma amigável sem quebrar a aplicação, qual exceção deve ser capturada no bloco <code>catch</code>?",
+        options: [
+          { key: "A", text: "<code>ArrayIndexOutOfBoundsException</code>" },
+          { key: "B", text: "<code>NumberFormatException</code>" },
+          { key: "C", text: "<code>ArithmeticException</code>" },
+          { key: "D", text: "<code>FileNotFoundException</code>" }
+        ],
+        answer: "B",
+        explanation: "O método <code>Integer.parseInt()</code> lança <code>NumberFormatException</code> sempre que o texto informado não puder ser convertido em um número inteiro."
+      },
+      {
+        id: 11,
+        tag: "Bloco try-catch-finally",
+        text: "Considere o seguinte trecho de código de conexão com um recurso externo:",
+        code: `try {
+    System.out.print("A ");
+    int x = 10 / 0;
+    System.out.print("B ");
+} catch (ArithmeticException e) {
+    System.out.print("C ");
+} finally {
+    System.out.print("D ");
+}`,
+        prompt: "Qual será a sequência exata exibida na saída padrão?",
+        options: [
+          { key: "A", text: "<code>A B C D </code>" },
+          { key: "B", text: "<code>A C D </code>" },
+          { key: "C", text: "<code>A B D </code>" },
+          { key: "D", text: "<code>C D </code>" }
+        ],
+        answer: "B",
+        explanation: "Imprime <code>A </code>; na linha seguinte ocorre divisão por zero (pulando <code>B </code>); o fluxo entra no <code>catch</code> e imprime <code>C </code>; por fim, o bloco <code>finally</code> sempre executa e imprime <code>D </code>."
+      },
+      {
+        id: 12,
+        tag: "Manipulação de Coleções — ArrayList",
+        text: "Em uma tela de cadastro de tarefas, você precisa armazenar uma lista dinâmica de descrições usando <code>ArrayList&lt;String&gt; tarefas = new ArrayList&lt;&gt;();</code>.",
+        prompt: "Após adicionar 3 tarefas com <code>.add()</code>, qual sequência de comandos remove a primeira tarefa inserida e verifica se a lista ficou vazia?",
+        options: [
+          { key: "A", text: "<code>tarefas.remove(0);</code> e <code>tarefas.isEmpty();</code>" },
+          { key: "B", text: "<code>tarefas.delete(1);</code> e <code>tarefas.empty();</code>" },
+          { key: "C", text: "<code>tarefas.remove(1);</code> e <code>tarefas.length == 0;</code>" },
+          { key: "D", text: "<code>tarefas.pop();</code> e <code>tarefas.size() == null;</code>" }
+        ],
+        answer: "A",
+        explanation: "<code>ArrayList</code> utiliza índices começando em <code>0</code> para <code>.remove(0)</code> e o método booleano <code>.isEmpty()</code> para checar se está vazio."
+      },
+      {
+        id: 13,
+        tag: "Arquitetura e Ecossistema Java",
+        text: "Um cliente precisa rodar uma aplicação Java desenvolvida no laboratório do SENAI (ambiente Windows) em um servidor de produção Linux, sem precisar recompilar o código-fonte.",
+        prompt: "Isso é possível graças à arquitetura da plataforma Java, na qual:",
+        options: [
+          { key: "A", text: "O compilador <code>javac</code> gera um arquivo <code>.exe</code> universal compatível com Windows e Linux." },
+          { key: "B", text: "O código-fonte <code>.java</code> é compilado para <em>bytecode</em> (<code>.class</code>), que é executado pela JVM (Java Virtual Machine) específica de cada sistema operacional." },
+          { key: "C", text: "O JRE traduz o código-fonte diretamente para linguagem SQL antes da execução." },
+          { key: "D", text: "O servidor Linux utiliza o código-fonte <code>.java</code> original e o interpreta linha a linha sem necessidade de compilação prévia." }
+        ],
+        answer: "B",
+        explanation: "A portabilidade do Java (<em>Write Once, Run Anywhere</em>) baseia-se na geração de <em>bytecode</em> intermediário (<code>.class</code>) executado pela JVM de cada plataforma."
+      },
+      {
+        id: 14,
+        tag: "Comparação de Strings",
+        text: "Um desenvolvedor criou uma rotina de autenticação simples:",
+        code: `String senhaDigitada = new String("senai2026");
+String senhaSalva = "senai2026";
+
+if (senhaDigitada == senhaSalva) {
+    System.out.println("Acesso permitido");
+} else {
+    System.out.println("Acesso negado");
+}`,
+        prompt: "Ao executar o código, a mensagem exibida foi <code>"Acesso negado"</code>. Qual é a causa técnica desse resultado e como corrigi-lo?",
+        options: [
+          { key: "A", text: "As duas strings possuem tamanhos diferentes; deve-se usar <code>.length()</code>." },
+          { key: "B", text: "O operador <code>==</code> compara referências de memória (que são distintas devido ao <code>new String()</code>), e não o conteúdo do texto; deve-se usar <code>senhaDigitada.equals(senhaSalva)</code>." },
+          { key: "C", text: "A classe <code>String</code> é mutável e perdeu o valor durante a atribuição; deve-se usar <code>StringBuilder</code>." },
+          { key: "D", text: "O operador <code>==</code> só funciona para tipos inteiros, causando erro lógico em textos; deve-se usar <code>senhaDigitada &gt;= senhaSalva</code>." }
+        ],
+        answer: "B",
+        explanation: "Em Java, objetos (incluindo <code>String</code>) devem ter seus conteúdos comparados com <code>.equals()</code>, pois <code>==</code> verifica apenas se apontam para o mesmo endereço de memória."
+      },
+      {
+        id: 15,
+        tag: "Modificador static",
+        text: "Em uma classe utilitária chamada <code>ConversorMoeda</code>, foi criado um método para converter valores de Dólar para Real sem depender do estado de nenhum objeto específico:",
+        code: `public class ConversorMoeda {
+    public static double dolarParaReal(double valorDolar, double cotacao) {
+        return valorDolar * cotacao;
+    }
+}`,
+        prompt: "Qual é a forma correta e recomendada de invocar esse método a partir da classe <code>Principal</code>?",
+        options: [
+          { key: "A", text: "<code>double r = ConversorMoeda.dolarParaReal(100.0, 5.50);</code>" },
+          { key: "B", text: "<code>double r = new ConversorMoeda.dolarParaReal(100.0, 5.50);</code>" },
+          { key: "C", text: "<code>double r = static.dolarParaReal(100.0, 5.50);</code>" },
+          { key: "D", text: "Não é possível invocar o método fora da classe <code>ConversorMoeda</code> por ser <code>static</code>." }
+        ],
+        answer: "A",
+        explanation: "Métodos marcados como <code>static</code> pertencem à classe e não a instâncias, sendo invocados diretamente via <code>NomeDaClasse.metodo()</code>."
+      }
+    ];
+
+    const container = document.getElementById("questionsContainer");
+    const progressText = document.getElementById("progressText");
+    const progressFill = document.getElementById("progressFill");
+    const timerBox = document.getElementById("timerBox");
+    const scorePanel = document.getElementById("scorePanel");
+    const scoreValue = document.getElementById("scoreValue");
+    const scoreFeedback = document.getElementById("scoreFeedback");
+    const warningMsg = document.getElementById("warningMsg");
+    const btnSubmit = document.getElementById("btnSubmit");
+    const btnReset = document.getElementById("btnReset");
+
+    let secondsElapsed = 0;
+    let timerInterval = null;
+    let isSubmitted = false;
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function renderQuestions() {
+      container.innerHTML = "";
+      questions.forEach((q) => {
+        if (q.block) {
+          const blockEl = document.createElement("div");
+          blockEl.className = "block-title";
+          blockEl.textContent = q.block;
+          container.appendChild(blockEl);
+        }
+
+        const card = document.createElement("div");
+        card.className = "question-card";
+        card.id = `card-q${q.id}`;
+
+        let codeHtml = q.code ? `<pre><code>${escapeHtml(q.code)}</code></pre>` : "";
+
+        let optionsHtml = q.options
+          .map((opt) => {
+            const optCode = opt.code ? `<pre><code>${escapeHtml(opt.code)}</code></pre>` : "";
+            return `
+              <label class="option-label" id="label-q${q.id}-${opt.key}">
+                <input type="radio" name="q${q.id}" value="${opt.key}" />
+                <div class="option-content">
+                  <strong>${opt.key})</strong> ${opt.text}
+                  ${optCode}
+                </div>
+              </label>
+            `;
+          })
+          .join("");
+
+        card.innerHTML = `
+          <div class="q-header">
+            <span class="q-num">Questão ${q.id}</span>
+            <span class="q-tag">${q.tag}</span>
+          </div>
+          <p class="q-text">${q.text}</p>
+          ${codeHtml}
+          <p class="q-text"><strong>${q.prompt}</strong></p>
+          <div class="options-list">${optionsHtml}</div>
+          <div class="explanation-box" id="exp-q${q.id}">
+            <strong>Gabarito: Alternativa ${q.answer}</strong><br />
+            ${q.explanation}
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      document.querySelectorAll('input[type="radio"]').forEach((radio) => {
+        radio.addEventListener("change", (e) => {
+          const qName = e.target.name;
+          const card = document.getElementById(`card-${qName}`);
+          if (card) card.classList.add("answered");
+          updateProgress();
+          warningMsg.style.display = "none";
+        });
+      });
+    }
+
+    function updateProgress() {
+      const answeredCount = questions.filter((q) =>
+        document.querySelector(`input[name="q${q.id}"]:checked`)
+      ).length;
+      const pct = Math.round((answeredCount / questions.length) * 100);
+      progressText.textContent = `${answeredCount} de ${questions.length} respondidas`;
+      progressFill.style.width = `${pct}%`;
+    }
+
+    function startTimer() {
+      clearInterval(timerInterval);
+      secondsElapsed = 0;
+      timerBox.textContent = "Tempo: 00:00";
+      timerInterval = setInterval(() => {
+        if (isSubmitted) return;
+        secondsElapsed++;
+        const mins = String(Math.floor(secondsElapsed / 60)).padStart(2, "0");
+        const secs = String(secondsElapsed % 60).padStart(2, "0");
+        timerBox.textContent = `Tempo: ${mins}:${secs}`;
+      }, 1000);
+    }
+
+    btnSubmit.addEventListener("click", () => {
+      if (isSubmitted) return;
+
+      const unanswered = questions.filter(
+        (q) => !document.querySelector(`input[name="q${q.id}"]:checked`)
+      );
+
+      if (unanswered.length > 0) {
+        const nums = unanswered.map((q) => q.id).join(", ");
+        warningMsg.textContent = `Ainda faltam ${unanswered.length} questão(ões) sem resposta: ${nums}. Responda todas antes de corrigir.`;
+        warningMsg.style.display = "block";
+        document.getElementById(`card-q${unanswered[0].id}`).scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
+      }
+
+      isSubmitted = true;
+      clearInterval(timerInterval);
+      warningMsg.style.display = "none";
+
+      let correctCount = 0;
+
+      questions.forEach((q) => {
+        const selected = document.querySelector(`input[name="q${q.id}"]:checked`).value;
+        const card = document.getElementById(`card-q${q.id}`);
+        const expBox = document.getElementById(`exp-q${q.id}`);
+
+        document.querySelectorAll(`input[name="q${q.id}"]`).forEach((inp) => (inp.disabled = true));
+
+        const correctLabel = document.getElementById(`label-q${q.id}-${q.answer}`);
+        correctLabel.classList.add("opt-correct");
+
+        if (selected === q.answer) {
+          correctCount++;
+          card.classList.add("result-correct");
+        } else {
+          card.classList.add("result-wrong");
+          const wrongLabel = document.getElementById(`label-q${q.id}-${selected}`);
+          wrongLabel.classList.add("opt-wrong");
+        }
+
+        expBox.classList.add("visible");
+      });
+
+      const pct = Math.round((correctCount / questions.length) * 100);
+      scoreValue.textContent = `${correctCount} / ${questions.length} (${pct}%)`;
+
+      if (pct >= 80) {
+        scoreFeedback.textContent = "Excelente desempenho! Você domina os fundamentos cobrados no SAEP.";
+      } else if (pct >= 60) {
+        scoreFeedback.textContent = "Bom resultado! Revise os comentários das questões que errou para consolidar os detalhes.";
+      } else {
+        scoreFeedback.textContent = "Vale reforçar a revisão antes da prova. Leia com atenção cada explicação abaixo.";
+      }
+
+      scorePanel.classList.add("visible");
+      btnSubmit.disabled = true;
+      btnSubmit.style.opacity = "0.6";
+      scorePanel.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    btnReset.addEventListener("click", () => {
+      isSubmitted = false;
+      scorePanel.classList.remove("visible");
+      warningMsg.style.display = "none";
+      btnSubmit.disabled = false;
+      btnSubmit.style.opacity = "1";
+      renderQuestions();
+      updateProgress();
+      startTimer();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    renderQuestions();
+    startTimer();
+  </script>
+</body>
+</html>
