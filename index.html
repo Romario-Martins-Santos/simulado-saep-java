@@ -501,7 +501,7 @@ System.out.println(media);`,
         options: [
           { key: "A", text: "Alterar a linha da média para <code>double media = (double) (n1 + n2) / 2;</code>" },
           { key: "B", text: "Alterar a linha da média para <code>double media = (n1 + n2) / (int) 2.0;</code>" },
-          { key: "C", text: "Alterar o <code>System.out.println</code> para <code>System.out.printf("%d", media);</code>" },
+          { key: "C", text: 'Alterar o <code>System.out.println</code> para <code>System.out.printf("%d", media);</code>' },
           { key: "D", text: "Substituir o operador <code>/</code> pelo operador <code>%</code>." }
         ],
         answer: "A",
@@ -538,7 +538,7 @@ System.out.println(media);`,
     public String getNome() { return nome; }
     public String getCargo() { return cargo; }
 }`,
-        prompt: "Ao instanciar <code>Funcionario f = new Funcionario("Carlos", "Analista");</code> e imprimir <code>f.getNome() + " - " + f.getCargo()</code>, o resultado obtido será:",
+        prompt: 'Ao instanciar <code>Funcionario f = new Funcionario("Carlos", "Analista");</code> e imprimir <code>f.getNome() + " - " + f.getCargo()</code>, o resultado obtido será:',
         options: [
           { key: "A", text: "<code>Carlos - Analista</code>" },
           { key: "B", text: "<code>null - Analista</code>" },
@@ -703,7 +703,7 @@ if (senhaDigitada == senhaSalva) {
 } else {
     System.out.println("Acesso negado");
 }`,
-        prompt: "Ao executar o código, a mensagem exibida foi <code>"Acesso negado"</code>. Qual é a causa técnica desse resultado e como corrigi-lo?",
+        prompt: 'Ao executar o código, a mensagem exibida foi <code>"Acesso negado"</code>. Qual é a causa técnica desse resultado e como corrigi-lo?',
         options: [
           { key: "A", text: "As duas strings possuem tamanhos diferentes; deve-se usar <code>.length()</code>." },
           { key: "B", text: "O operador <code>==</code> compara referências de memória (que são distintas devido ao <code>new String()</code>), e não o conteúdo do texto; deve-se usar <code>senhaDigitada.equals(senhaSalva)</code>." },
